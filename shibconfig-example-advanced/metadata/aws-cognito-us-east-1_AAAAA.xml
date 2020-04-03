@@ -1,0 +1,15 @@
+<!--
+    Amazon Cognito Metadata Example
+    entityID and AssertionConsumerService need to be updated with their appropriate values, based on the User Pool.
+
+    https://aws.amazon.com/blogs/mobile/amazon-cognito-user-pools-supports-federation-with-saml/
+    https://signin.aws.amazon.com/static/saml-metadata.xml
+
+-->
+<?xml version="1.0" encoding="UTF-8"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="urn:amazon:cognito:sp:us-east-1_AAAAAA">
+    <md:SPSSODescriptor AuthnRequestsSigned="false" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
+        <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://<domain_prefix>.auth.<region>.amazoncognito.com/saml2/idpresponse"
+        /></md:SPSSODescriptor>
+</md:EntityDescriptor>

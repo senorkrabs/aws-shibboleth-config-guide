@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Example policy file that shows attribute filter examples for the AWS Console
+-->
+<AttributeFilterPolicyGroup id="ShibbolethFilterPolicy"
+        xmlns="urn:mace:shibboleth:2.0:afp"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:mace:shibboleth:2.0:afp http://shibboleth.net/schema/idp/shibboleth-afp.xsd">
+
+      <!-- 
+    These are the attributes released to AWS for console access. 
+    
+    IMPORTANT: Only roles whose names begin with "AWS-" will be included!
+    
+    https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_saml_assertions.html
+    
+    --> 
+    <AttributeFilterPolicy id="releaseAWSToAWS">
+        <PolicyRequirementRule xsi:type="Requester" value="urn:amazon:webservices"/>
+        <AttributeRule attributeID="awsRoles">
+            <PermitValueRule xsi:type="ValueRegex" regex="arn\:aws\:iam\:\:\d{12}\:role\/AWS-.*"/>
+        </AttributeRule>
+        <AttributeRule attributeID="awsRoleSessionName">
+            <PermitValueRule xsi:type="ANY"/>
+        </AttributeRule>
+	    <AttributeRule attributeID="userPrincipalName">
+	        <PermitValueRule xsi:type="ANY" />
+	    </AttributeRule>	         
+    </AttributeFilterPolicy>
+
+</AttributeFilterPolicyGroup>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util" xmlns:p="http://www.springframework.org/schema/p" xmlns:c="http://www.springframework.org/schema/c"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd" default-init-method="initialize" default-destroy-method="destroy">
+
+
+    <!-- SAML 2 NameID Generation -->
+    <util:list id="shibboleth.SAML2NameIDGenerators">
+
+        <ref bean="shibboleth.SAML2TransientGenerator" />
+
+        <!-- 
+        Used for AWS SSO, which requires NameID to be formatted as emailAddress. This isn't referenced in the AWS SSO docs (yet)
+        but is specified in the metadata file provided by AWS SSO. This value must always be unique and never change. 
+        
+        https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-idp.html#how-to-connect-idp 
+        -->
+        <bean parent="shibboleth.SAML2AttributeSourcedGenerator" p:omitQualifiers="true" p:format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress" p:attributeSourceIds="#{ {'userPrincipalName'} }">
+            <property name="activationCondition">
+                <bean parent="shibboleth.Conditions.RelyingPartyId">
+                    <constructor-arg name="candidates">
+                        <list>
+                            <value>https://samltest.id/saml/sp</value>
+                            <value>https://us-east-1.signin.aws.amazon.com/platform/saml/d-1234567</value>
+                        </list>
+                    </constructor-arg>
+
+                </bean>
+            </property>
+        </bean>
+
+        <!-- 
+        Used for AWS Console and AppStream2. 
+        
+        AppStream2: For Active Directory domain-joined stacks, NameID must be either domain\username (sAMAccountName in Active Directory)
+        or username@domain.com (userPrincipalName in ActiveD). 
+        
+        Best practice for AppStream2 is to set the SAML Subject Type to persistent and put a condition in the AssumeRoleWithSAML clause 
+        that verifies sub_type = persistent 
+        
+        https://docs.aws.amazon.com/appstream2/latest/developerguide/external-identity-providers-setting-up-saml.html#external-identity-providers-create-assertions
+        
+        -->
+        <bean parent="shibboleth.SAML2AttributeSourcedGenerator" p:omitQualifiers="true" p:format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent" p:attributeSourceIds="#{ {'userPrincipalName'} }">
+            <property name="activationCondition">
+                <bean parent="shibboleth.Conditions.RelyingPartyId">
+                    <constructor-arg name="candidates">
+                        <list>
+                            <value>urn:amazon:webservices</value>
+                            <value>urn:amazon:appstream</value>
+                        </list>
+                    </constructor-arg>
+                </bean>
+            </property>
+        </bean>
+
+        <!-- 
+            Used for Cognito User Pools.
+            This assumes that sAMAccountName is a persistent username that never changes.
+            With cognito, it's important that this is persistent and never change. 
+
+            https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-managing-saml-idp-console.html
+            https://aws.amazon.com/blogs/mobile/amazon-cognito-user-pools-supports-federation-with-saml/
+        
+        -->
+        <bean parent="shibboleth.SAML2AttributeSourcedGenerator" p:omitQualifiers="true" p:format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent" p:attributeSourceIds="#{ {'sAMAccountName'} }">
+            <property name="activationCondition">
+                <bean parent="shibboleth.Conditions.RelyingPartyId">
+                    <constructor-arg name="candidates">
+                        <list>
+                            <value>urn:amazon:cognito:sp:us-east-1_AAAAAA</value>
+                        </list>
+                    </constructor-arg>
+                </bean>
+            </property>
+        </bean>
+    </util:list>
+
+
+
+
+    <!-- SAML 1 NameIdentifier Generation -->
+    <util:list id="shibboleth.SAML1NameIdentifierGenerators">
+
+        <ref bean="shibboleth.SAML1TransientGenerator" />
+        <!--
+        <bean parent="shibboleth.SAML1AttributeSourcedGenerator"
+            p:omitQualifiers="true"
+            p:format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+            p:attributeSourceIds="#{ {'mail'} }" />
+        -->
+
+    </util:list>
+
+</beans>

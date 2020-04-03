@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://us-east-1.signin.aws.amazon.com/platform/saml/d-1234567">
+    <md:SPSSODescriptor AuthnRequestsSigned="false" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
+        <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://us-east-1.signin.aws.amazon.com/platform/saml/acs/123456-1234-1234-1234-123456789012"
+        /></md:SPSSODescriptor>
+</md:EntityDescriptor>
