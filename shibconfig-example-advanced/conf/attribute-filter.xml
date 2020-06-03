@@ -17,6 +17,7 @@
 	   <PolicyRequirementRule xsi:type="OR">
 	       <Rule xsi:type="Requester" value="https://samltest.id/saml/sp" />
 	       <Rule xsi:type="Requester" value="urn:amazon:cognito:sp:us-east-1_AAAAAA" />
+           <Rule xsi:type="Requester" value="https://us-east-1.signin.aws.amazon.com/platform/saml/d-1234567" />
 	   </PolicyRequirementRule> 
 	    <AttributeRule attributeID="userPrincipalName">
 	        <PermitValueRule xsi:type="ANY" />
